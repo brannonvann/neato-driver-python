@@ -120,7 +120,7 @@ class Calibrations(Enum):
     Maximum = "Maximum"
 
 
-def __debug(message):
+def __log(message):
     global __debug
     if __debug:
         print(message)
@@ -128,7 +128,7 @@ def __debug(message):
 
 def __write(message):
     global __serialPort
-    __debug(message)
+    __log(message)
     __serialPort.flush()
     __serialPort.write(str.encode(message + '\n'))
     buffer = list()

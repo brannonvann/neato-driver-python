@@ -9,7 +9,7 @@ if True:
         # Update with your serial port name here
         robot.init('/dev/tty.usbmodem14401', True)
 
-        #Turn on Test Mode - Required for many of the commands
+        # Turn on Test Mode - Required for many of the commands
         robot.TestMode(True)
 
         # set neato's schedule clock to now.

@@ -1,105 +1,4 @@
-# neato-driver-python
-
-This repo contains a python driver for Neato brand robot vacuums. Use this driver to control a Neato robot using the USB port.
-
-If you want to simply program your Neato Vacuum to do something neat the `example.py` file contains a short example. The driver is documented with Python Docstrings and follows the official documentation with some modifications to make it easy to use.
-
-This driver is used in the [neato-ros](https://github.com/brannonvann/neato) project to turn a Neato vacuum into a [ROS](http://ros.org/) robot.
-
-### Table of Contents
-
-- [neato-driver-python](#neato-driver-python)
-    - [Table of Contents](#table-of-contents)
-  - [Getting Started](#getting-started)
-  - [Usage](#usage)
-  - [API](#api)
-    - [Help](#help)
-    - [Clean](#clean)
-    - [DiagTest](#diagtest)
-    - [GetAccel](#getaccel)
-    - [GetAnalogSensors](#getanalogsensors)
-    - [GetButtons](#getbuttons)
-    - [GetCalInfo](#getcalinfo)
-    - [GetCharger](#getcharger)
-    - [GetDigitalSensors](#getdigitalsensors)
-    - [GetErr](#geterr)
-    - [GetLDSScan](#getldsscan)
-    - [GetMotors](#getmotors)
-    - [GetSchedule](#getschedule)
-    - [GetTime](#gettime)
-    - [GetVersion](#getversion)
-    - [GetWarranty](#getwarranty)
-    - [PlaySound](#playsound)
-    - [RestoreDefaults](#restoredefaults)
-    - [SetFuelGauge](#setfuelgauge)
-    - [SetMotorBrush, SetMotorVacuum, SetMotorWheelsEnable, and SetMotorWheels](#setmotorbrush-setmotorvacuum-setmotorwheelsenable-and-setmotorwheels)
-    - [SetTime](#settime)
-    - [SetLED](#setled)
-    - [SetIEC](#setiec)
-    - [SetLCD](#setlcd)
-    - [SetLDSRotation](#setldsrotation)
-    - [SetSchedule](#setschedule)
-    - [SetSystemMode](#setsystemmode)
-    - [TestMode](#testmode)
-    - [Upload](#upload)
-  - [Issues](#issues)
-
-## Getting Started
-
-1. Clone this repo to the computer.
-1. Install Python 3.
-1. Using a usb cable, plug your Neato robot vacuum into a computer. The Neato's Mini USB port is on the outside next to a rubber plug.
-1. You may have to modify the permissions on the `example.py` file to allow it to be executed. In linux use the Terminal command `chmod +x ./example.py` while in the directory. If you don't know how to do this, search the internet.
-1. Update the serial port value in the `example.py` file.
-1. Run the example: `python3 example.py`.
-
-## Usage
-
-This driver is fully documented in code and the [api](#api) section below. Here are a few things you can do:
-
-```python
-
-import neato_driver as robot
-
-# Initilize connection to the neato with logging - replace with your usb port
-robot.init('/dev/tty.usbmodem14401', True)
-
-# Play a Sound
-robot.PlaySound(neato.Sounds.Alert)
-
-# Move Wheels (left mm, right mm, speed mm/s, acceleration mm/s^2 )
-robot.SetMotorWheels(50, 50, 20, 20)
-
-# Turn on Test Mode - Required for many of the commands.
-robot.TestMode(True)
-
-# Turn on Lidar
-robot.SetLDSRotation(True)
-
-# Get Lidar Data
-lidar_data = robot.GetLDSScan()
-
-# Turn off lidar
-robot.SetLDSRotation(False)
-
-# Get the button states
-buttons = robot.GetButtons()
-
-# Get the digital sensors
-sensors_digital = robot.GetDigitalSensors()
-
-# Get the analog sensors
-sensors_analog = robot.GetAnalogSensors()
-
-# Get the motor states
-motors = robot.GetMotors()
-
-# Get the help docs from your Neato
-help = robot.Help()
-
-```
-
-## API
+# API
 
 This describes the `neato_driver.py` API. The documentation is ordered and grouped according to the Neato API which matches the `neato_driver.py` API in all but a few cases. Any differences are noted.
 
@@ -108,7 +7,7 @@ Each of the `neato_driver` functions are described below along with the Neato va
 This was generated using the `api.py` script. To produce the documentation, adjust the serial port to match your Neato's and run the script.
 
 
-### Help
+## Help
 
 The below description from the Neato vacuum maps to the `neato_driver.Help()` function
 
@@ -156,7 +55,7 @@ TestMode - Sets TestMode on or off. Some commands can only be run in TestMode.
 Upload - Uploads new program to the robot.
 ```
 
-### Clean
+## Clean
 
 The below description from the Neato vacuum maps to the `neato_driver.Clean()` function
 
@@ -171,7 +70,7 @@ Height - (Optional) Spot Height in CM (100-500)(-1=use default).
 Stop - Stop Cleaning.
 ```
 
-### DiagTest
+## DiagTest
 
 The below description from the Neato vacuum maps to the `neato_driver.DiagTest()` function
 
@@ -198,7 +97,7 @@ Speed - DropTest argument to set the robot speed in mm/s.
 BrushSpeed - DropTest argument to set the speed of the brush in rpm.
 ```
 
-### GetAccel
+## GetAccel
 
 The below description from the Neato vacuum maps to the `neato_driver.GetAccel()` function
 
@@ -221,7 +120,7 @@ Returns: `<class 'dict'>`
 {'PitchInDegrees': -0.85, 'RollInDegrees': 0.91, 'XInG': -0.015, 'YInG': 0.016, 'ZInG': 1.007, 'SumInG': 1.007}
 ```
 
-### GetAnalogSensors
+## GetAnalogSensors
 
 The below description from the Neato vacuum maps to the `neato_driver.GetAnalogSensors()` function
 
@@ -256,7 +155,7 @@ Returns: `<class 'dict'>`
 {'WallSensorInMM': 81, 'BatteryVoltageInmV': 4154, 'LeftDropInMM': 150, 'RightDropInMM': 150, 'LeftMagSensor': -236, 'RightMagSensor': -232, 'UIButtonInmV': 3335, 'VacuumCurrentInmA': 0, 'ChargeVoltInmV': 23938, 'BatteryTemp0InC': 25, 'BatteryTemp1InC': 23, 'CurrentInmA': 113, 'SideBrushCurrentInmA': 0, 'VoltageReferenceInmV': 1225, 'AccelXInmG': -16, 'AccelYInmG': 20, 'AccelZInmG': 1004}
 ```
 
-### GetButtons
+## GetButtons
 
 The below description from the Neato vacuum maps to the `neato_driver.GetButtons()` function
 
@@ -279,7 +178,7 @@ Returns: `<class 'dict'>`
 {'BTN_SOFT_KEY': False, 'BTN_SCROLL_UP': False, 'BTN_START': False, 'BTN_BACK': False, 'BTN_SCROLL_DOWN': False}
 ```
 
-### GetCalInfo
+## GetCalInfo
 
 The below description from the Neato vacuum maps to the `neato_driver.GetCalInfo()` function
 
@@ -295,7 +194,7 @@ Returns: `<class 'dict'>`
 {'LDSOffset': 0, 'XAccel': 0, 'YAccel': 0, 'ZAccel': 0, 'RTCOffset': 0, 'LCDContrast': 25, 'RDropMin': 293, 'RDropMid': 168, 'RDropMax': 84, 'LDropMin': 295, 'LDropMid': 168, 'LDropMax': 68, 'WallMin': 721, 'WallMid': 265, 'WallMax': 140, 'QAState': 0, 'CleaningTestSurface': 'carpet', 'CleaningTestHardSpeed': 200, 'CleaningTestCarpetSpeed': 100, 'CleaningTestHardDistance': 1200, 'CleaningTestCarpetDistance': 1200}
 ```
 
-### GetCharger
+## GetCharger
 
 The below description from the Neato vacuum maps to the `neato_driver.GetCharger()` function
 
@@ -311,7 +210,7 @@ Returns: `<class 'dict'>`
 {'FuelPercent': 0, 'BatteryOverTemp': False, 'ChargingActive': False, 'ChargingEnabled': False, 'ConfidentOnFuel': False, 'OnReservedFuel': True, 'EmptyFuel': True, 'BatteryFailure': False, 'ExtPwrPresent': True, 'ThermistorPresent[0]': True, 'ThermistorPresent[1]': True, 'BattTempCAvg[0]': 25, 'BattTempCAvg[1]': 23, 'VBattV': 4.15, 'VExtV': 23.98, 'Charger_mAH': 0.0}
 ```
 
-### GetDigitalSensors
+## GetDigitalSensors
 
 The below description from the Neato vacuum maps to the `neato_driver.GetDigitalSensors()` function
 
@@ -337,7 +236,7 @@ Returns: `<class 'dict'>`
 {'SNSR_DC_JACK_CONNECT': False, 'SNSR_DUSTBIN_IS_IN': True, 'SNSR_LEFT_WHEEL_EXTENDED': False, 'SNSR_RIGHT_WHEEL_EXTENDED': False, 'LSIDEBIT': False, 'LFRONTBIT': False, 'RSIDEBIT': False, 'RFRONTBIT': False}
 ```
 
-### GetErr
+## GetErr
 
 The below description from the Neato vacuum maps to the `neato_driver.GetErr()` function
 
@@ -354,7 +253,7 @@ Returns: `<class 'str'>`
 GetErr
 ```
 
-### GetLDSScan
+## GetLDSScan
 
 The below description from the Neato vacuum maps to the `neato_driver.GetLDSScan()` function
 
@@ -372,7 +271,7 @@ Returns: `<class 'dict'>`
 {0: [622, 297, 0], 1: [0, 0, 8035], 2: [0, 0, 8021], 3: [614, 460, 0], 4: [619, 283, 0], 5: [17010, 23, 0], 6: [0, 0, 8035], 7: [0, 0, 8035], 8: [0, 0, 8035], 9: [0, 0, 8035], 10: [0, 0, 8035], 11: [0, 0, 8003], 12: [0, 0, 8035], 13: [4915, 5, 0], 14: [5933, 7, 0], 15: [0, 0, 8035], 16: [0, 0, 8035], 17: [0, 0, 8035], 18: [0, 0, 8035], 19: [0, 0, 8035], 20: [0, 0, 8003], 21: [0, 0, 8035], 22: [0, 0, 8035], 23: [5126, 5, 0], 24: [0, 0, 8035], 25: [0, 0, 8035], 26: [0, 0, 8035], 27: [0, 0, 8025], 28: [0, 0, 8035], 29: [0, 0, 8035], 30: [0, 0, 8035], 31: [0, 0, 8035], 32: [0, 0, 8025], 33: [0, 0, 8035], 34: [0, 0, 8035], 35: [0, 0, 8035], 36: [0, 0, 8035], 37: [0, 0, 8035], 38: [0, 0, 8025], 39: [0, 0, 8035], 40: [0, 0, 8035], 41: [0, 0, 8035], 42: [0, 0, 8035], 43: [0, 0, 8025], 44: [3407, 11, 0], 45: [3431, 9, 0], 46: [3492, 9, 0], 47: [3599, 8, 0], 48: [3611, 8, 0], 49: [3671, 7, 0], 50: [0, 7, 8021], 51: [0, 0, 8035], 52: [0, 0, 8035], 53: [0, 0, 8035], 54: [0, 0, 8035], 55: [0, 0, 8025], 56: [0, 0, 8035], 57: [4693, 6, 0], 58: [0, 0, 8035], 59: [0, 0, 8035], 60: [0, 0, 8035], 61: [0, 0, 8035], 62: [0, 0, 8025], 63: [0, 0, 8035], 64: [5027, 6, 0], 65: [0, 0, 8035], 66: [0, 0, 8035], 67: [4863, 5, 0], 68: [0, 0, 8002], 69: [4937, 10, 0], 70: [4876, 7, 0], 71: [4846, 9, 0], 72: [4791, 7, 0], 73: [4762, 13, 0], 74: [0, 0, 8035], 75: [2683, 17, 0], 76: [2657, 24, 0], 77: [2628, 22, 0], 78: [2550, 21, 0], 79: [0, 0, 8035], 80: [0, 0, 8035], 81: [0, 0, 8035], 82: [0, 0, 8035], 83: [0, 0, 8025], 84: [0, 0, 8035], 85: [0, 0, 8035], 86: [0, 0, 8035], 87: [0, 0, 8035], 88: [0, 0, 8003], 89: [0, 0, 8035], 90: [0, 0, 8035], 91: [1071, 6, 0], 92: [0, 0, 8035], 93: [0, 0, 8035], 94: [0, 0, 8035], 95: [0, 0, 8035], 96: [0, 0, 8025], 97: [0, 0, 8035], 98: [0, 0, 8035], 99: [0, 0, 8035], 100: [0, 0, 8035], 101: [0, 0, 8035], 102: [0, 0, 8035], 103: [0, 0, 8035], 104: [0, 0, 8025], 105: [0, 0, 8035], 106: [0, 0, 8035], 107: [0, 0, 8035], 108: [0, 0, 8035], 109: [0, 0, 8035], 110: [0, 0, 8025], 111: [0, 0, 8035], 112: [0, 0, 8035], 113: [0, 0, 8035], 114: [0, 0, 8035], 115: [0, 0, 8002], 116: [0, 0, 8035], 117: [0, 0, 8035], 118: [0, 0, 8035], 119: [0, 0, 8035], 120: [0, 0, 8035], 121: [0, 0, 8025], 122: [0, 0, 8035], 123: [0, 0, 8035], 124: [0, 0, 8035], 125: [0, 0, 8035], 126: [0, 0, 8035], 127: [0, 0, 8003], 128: [0, 0, 8035], 129: [0, 0, 8035], 130: [0, 0, 8035], 131: [0, 0, 8035], 132: [0, 0, 8025], 133: [0, 0, 8035], 134: [0, 0, 8035], 135: [0, 0, 8035], 136: [0, 0, 8035], 137: [0, 0, 8035], 138: [0, 0, 8025], 139: [0, 0, 8035], 140: [0, 0, 8035], 141: [0, 0, 8035], 142: [0, 0, 8035], 143: [0, 0, 8025], 144: [0, 0, 8035], 145: [0, 0, 8035], 146: [0, 0, 8021], 147: [0, 0, 8035], 148: [0, 0, 8035], 149: [0, 0, 8035], 150: [0, 0, 8002], 151: [0, 0, 8035], 152: [0, 0, 8035], 153: [0, 0, 8035], 154: [0, 0, 8035], 155: [0, 0, 8003], 156: [0, 0, 8035], 157: [0, 0, 8035], 158: [0, 0, 8035], 159: [0, 0, 8025], 160: [0, 0, 8035], 161: [0, 0, 8035], 162: [0, 0, 8035], 163: [0, 0, 8035], 164: [0, 0, 8025], 165: [0, 0, 8035], 166: [0, 0, 8035], 167: [0, 0, 8035], 168: [0, 0, 8035], 169: [0, 0, 8025], 170: [0, 0, 8035], 171: [0, 0, 8035], 172: [0, 0, 8035], 173: [0, 0, 8035], 174: [0, 0, 8025], 175: [0, 0, 8035], 176: [0, 0, 8035], 177: [0, 0, 8035], 178: [0, 0, 8035], 179: [0, 0, 8025], 180: [0, 0, 8035], 181: [0, 0, 8035], 182: [0, 0, 8035], 183: [0, 0, 8035], 184: [0, 0, 8003], 185: [0, 0, 8035], 186: [0, 0, 8035], 187: [0, 0, 8035], 188: [0, 0, 8035], 189: [0, 0, 8025], 190: [0, 0, 8035], 191: [0, 0, 8035], 192: [0, 0, 8035], 193: [0, 0, 8035], 194: [0, 0, 8035], 195: [0, 0, 8035], 196: [0, 0, 8025], 197: [0, 0, 8035], 198: [0, 0, 8035], 199: [0, 0, 8035], 200: [0, 0, 8035], 201: [0, 0, 8035], 202: [0, 0, 8003], 203: [0, 0, 8035], 204: [0, 0, 8035], 205: [0, 0, 8035], 206: [0, 0, 8035], 207: [0, 0, 8025], 208: [0, 0, 8035], 209: [0, 0, 8035], 210: [0, 0, 8035], 211: [0, 0, 8035], 212: [0, 0, 8003], 213: [0, 0, 8035], 214: [0, 0, 8035], 215: [0, 0, 8035], 216: [0, 0, 8035], 217: [0, 0, 8025], 218: [0, 0, 8035], 219: [0, 0, 8035], 220: [0, 0, 8035], 221: [0, 0, 8035], 222: [0, 0, 8002], 223: [0, 0, 8035], 224: [0, 0, 8035], 225: [0, 0, 8035], 226: [0, 0, 8035], 227: [0, 0, 8025], 228: [0, 0, 8035], 229: [0, 0, 8035], 230: [0, 0, 8035], 231: [0, 0, 8035], 232: [0, 0, 8003], 233: [0, 0, 8035], 234: [0, 0, 8035], 235: [0, 0, 8035], 236: [0, 0, 8035], 237: [0, 0, 8025], 238: [0, 0, 8035], 239: [0, 0, 8035], 240: [0, 0, 8035], 241: [698, 179, 0], 242: [0, 179, 8021], 243: [676, 386, 0], 244: [669, 398, 0], 245: [663, 422, 0], 246: [657, 396, 0], 247: [650, 379, 0], 248: [638, 261, 0], 249: [625, 45, 0], 250: [0, 0, 8035], 251: [0, 0, 8035], 252: [0, 0, 8035], 253: [0, 0, 8035], 254: [0, 0, 8025], 255: [0, 0, 8035], 256: [0, 0, 8035], 257: [17008, 29, 0], 258: [616, 226, 0], 259: [607, 423, 0], 260: [602, 532, 0], 261: [599, 517, 0], 262: [597, 585, 0], 263: [595, 583, 0], 264: [594, 562, 0], 265: [592, 589, 0], 266: [590, 603, 0], 267: [590, 596, 0], 268: [589, 644, 0], 269: [588, 627, 0], 270: [587, 675, 0], 271: [587, 666, 0], 272: [587, 689, 0], 273: [587, 732, 0], 274: [587, 700, 0], 275: [588, 714, 0], 276: [588, 691, 0], 277: [589, 641, 0], 278: [590, 626, 0], 279: [591, 616, 0], 280: [593, 557, 0], 281: [598, 416, 0], 282: [604, 343, 0], 283: [609, 246, 0], 284: [614, 89, 0], 285: [0, 0, 8035], 286: [0, 0, 8035], 287: [0, 0, 8035], 288: [0, 0, 8035], 289: [0, 0, 8025], 290: [490, 275, 0], 291: [502, 316, 0], 292: [600, 453, 0], 293: [578, 66, 0], 294: [543, 86, 0], 295: [524, 178, 0], 296: [521, 528, 0], 297: [517, 683, 0], 298: [515, 744, 0], 299: [515, 695, 0], 300: [519, 650, 0], 301: [567, 500, 0], 302: [559, 550, 0], 303: [0, 0, 8035], 304: [0, 0, 8035], 305: [16771, 25, 0], 306: [0, 0, 8035], 307: [0, 0, 8035], 308: [0, 0, 8035], 309: [0, 0, 8035], 310: [0, 0, 8035], 311: [0, 0, 8025], 312: [0, 0, 8035], 313: [0, 0, 8035], 314: [0, 0, 8021], 315: [0, 0, 8035], 316: [2477, 10, 0], 317: [0, 0, 8002], 318: [0, 0, 8035], 319: [0, 0, 8035], 320: [523, 191, 0], 321: [0, 0, 8035], 322: [498, 677, 0], 323: [492, 768, 0], 324: [485, 612, 0], 325: [475, 147, 0], 326: [0, 0, 8035], 327: [0, 0, 8035], 328: [0, 0, 8035], 329: [0, 0, 8035], 330: [0, 0, 8025], 331: [16908, 19, 0], 332: [16920, 22, 0], 333: [532, 396, 0], 334: [542, 150, 0], 335: [1196, 53, 0], 336: [1153, 56, 0], 337: [1141, 28, 0], 338: [0, 0, 8035], 339: [1186, 21, 0], 340: [1226, 55, 0], 341: [1326, 98, 0], 342: [1081, 33, 0], 343: [0, 0, 8035], 344: [0, 0, 8035], 345: [0, 0, 8035], 346: [0, 0, 8035], 347: [0, 0, 8025], 348: [0, 0, 8035], 349: [0, 0, 8035], 350: [0, 0, 8035], 351: [0, 0, 8035], 352: [0, 0, 8025], 353: [1724, 57, 0], 354: [1562, 26, 0], 355: [1579, 15, 0], 356: [1571, 64, 0], 357: [0, 0, 8035], 358: [0, 0, 8035], 359: [0, 0, 8035], 'ROTATION_SPEED': 5.12}
 ```
 
-### GetMotors
+## GetMotors
 
 The below description from the Neato vacuum maps to the `neato_driver.GetMotors()` function
 
@@ -403,7 +302,7 @@ Returns: `<class 'dict'>`
 {'Brush_RPM': 0, 'Brush_mA': 0, 'Vacuum_RPM': 0, 'Vacuum_mA': 0, 'LeftWheel_RPM': 0, 'LeftWheel_Load%': 0, 'LeftWheel_PositionInMM': 2219, 'LeftWheel_Speed': 0, 'RightWheel_RPM': 0, 'RightWheel_Load%': 0, 'RightWheel_PositionInMM': 1818, 'RightWheel_Speed': 0, 'Charger_mAH': 0, 'SideBrush_mA': 0}
 ```
 
-### GetSchedule
+## GetSchedule
 
 The below description from the Neato vacuum maps to the `neato_driver.GetSchedule()` function
 
@@ -421,7 +320,7 @@ Returns: `<class 'dict'>`
 {'schedule': 'disabled', 'Sun': {'start': '00:00', 'flag': 'None'}, 'Mon': {'start': '00:00', 'flag': 'None'}, 'Tue': {'start': '00:00', 'flag': 'None'}, 'Wed': {'start': '08:15', 'flag': 'H'}, 'Thu': {'start': '00:00', 'flag': 'None'}, 'Fri': {'start': '08:15', 'flag': 'H'}, 'Sat': {'start': '00:00', 'flag': 'None'}}
 ```
 
-### GetTime
+## GetTime
 
 The below description from the Neato vacuum maps to the `neato_driver.GetTime()` function
 
@@ -437,7 +336,7 @@ Returns: `<class 'datetime.datetime'>`
 2021-04-30 13:43:42.379894
 ```
 
-### GetVersion
+## GetVersion
 
 The below description from the Neato vacuum maps to the `neato_driver.GetVersion()` function
 
@@ -453,7 +352,7 @@ Returns: `<class 'dict'>`
 {'Component': ['Major', 'Minor'], 'ModelID': ['-1', 'XV28'], 'ConfigID': ['1', ''], 'Serial Number': 'SERIAL-EXCLUDED', 'Software': ['3', '4'], 'BatteryType': ['1', 'NIMH_12CELL'], 'BlowerType': ['1', 'BLOWER_ORIG'], 'BrushSpeed': ['1200', ''], 'BrushMotorType': ['1', 'BRUSH_MOTOR_ORIG'], 'SideBrushType': ['1', 'SIDE_BRUSH_NONE'], 'WheelPodType': ['1', 'WHEEL_POD_ORIG'], 'DropSensorType': ['1', 'DROP_SENSOR_ORIG'], 'MagSensorType': ['1', 'MAG_SENSOR_ORIG'], 'WallSensorType': ['1', 'WALL_SENSOR_ORIG'], 'Locale': ['1', 'LOCALE_USA'], 'LDS Software': ['V2.6.15295', '0000000000'], 'LDS Serial': 'SERIAL-EXCLUDED', 'LDS CPU': ['F2802x/c001', ''], 'MainBoard Vendor ID': ['505', ''], 'MainBoard Serial Number': 'SERIAL-EXCLUDED', 'BootLoader Software': ['18119', 'P'], 'MainBoard Software': ['23179', '1'], 'MainBoard Boot': ['16219', ''], 'MainBoard Version': ['4', '0'], 'ChassisRev': ['2', '']}
 ```
 
-### GetWarranty
+## GetWarranty
 
 The below description from the Neato vacuum maps to the `neato_driver.GetWarranty()` function
 
@@ -469,7 +368,7 @@ Returns: `<class 'list'>`
 ['000ae7ee', '0137', '18244b76']
 ```
 
-### PlaySound
+## PlaySound
 
 The below description from the Neato vacuum maps to the `neato_driver.PlaySound()` function
 
@@ -501,7 +400,7 @@ Legal values are:
 Stop - Stop playing sound.
 ```
 
-### RestoreDefaults
+## RestoreDefaults
 
 The below description from the Neato vacuum maps to the `neato_driver.RestoreDefaults()` function
 
@@ -509,7 +408,7 @@ The below description from the Neato vacuum maps to the `neato_driver.RestoreDef
 RestoreDefaults - Restore user settings to default.
 ```
 
-### SetFuelGauge
+## SetFuelGauge
 
 The below description from the Neato vacuum maps to the `neato_driver.SetFuelGauge()` function
 
@@ -518,7 +417,7 @@ SetFuelGauge - Set Fuel Gauge Level.
 Percent - Fuel Gauge percent from 0 to 100
 ```
 
-### SetMotorBrush, SetMotorVacuum, SetMotorWheelsEnable, and SetMotorWheels
+## SetMotorBrush, SetMotorVacuum, SetMotorWheelsEnable, and SetMotorWheels
 
 The below description from the Neato vacuum maps to the `neato_driver.`SetMotorBrush()`, `neato_driver.SetMotorVacuum()`, `neato_driver.SetMotorWheelsEnable()`, and `neato_driver.SetMotorWheels()` functions. These were divided to make it easier to integrate to the Neato.
 
@@ -551,7 +450,7 @@ SideBrushOff - Disable the Side Brush
 SideBrushPower - Side Brush maximum power in milliwatts
 ```
 
-### SetTime
+## SetTime
 
 The below description from the Neato vacuum maps to the `neato_driver.SetTime()` function
 
@@ -563,7 +462,7 @@ Min - Minutes value 0..59 (required)
 Sec - Seconds value 0..59 (Optional, defaults to 0)
 ```
 
-### SetLED
+## SetLED
 
 The below description from the Neato vacuum maps to the `neato_driver.SetLED()` function
 
@@ -582,7 +481,7 @@ BlinkOn - Start the LED Blink
 BlinkOff - Stop the LED Blink
 ```
 
-### SetIEC
+## SetIEC
 
 The SetIEC function is not supported by this driver.
 
@@ -594,7 +493,7 @@ HardSpeed - Next Arg is test speed on hard floors (10-300mm/s)
 Distance - Next Arg is test distance (200-4000 mm, default 1200)
 ```
 
-### SetLCD
+## SetLCD
 
 The below description from the Neato vacuum maps to the `neato_driver.SetLCD()` function
 
@@ -613,7 +512,7 @@ FGBlack - Use Black as Foreground (line) color
 Contrast - Set the following value as the LCD Contrast value into NAND. 0..63
 ```
 
-### SetLDSRotation
+## SetLDSRotation
 
 The below description from the Neato vacuum maps to the `neato_driver.SetLDSRotation()` function
 
@@ -623,7 +522,7 @@ On - Turns LDS rotation on. Mutually exclusive with Off.
 Off - Turns LDS rotation off. Mutually exclusive with On.
 ```
 
-### SetSchedule
+## SetSchedule
 
 The below description from the Neato vacuum maps to the `neato_driver.SetSchedule()` function
 
@@ -640,7 +539,7 @@ ON - Enable Scheduled cleanings (Mutually exclusive with OFF)
 OFF - Disable Scheduled cleanings (Mutually exclusive with ON)
 ```
 
-### SetSystemMode
+## SetSystemMode
 
 The below description from the Neato vacuum maps to the `neato_driver.SetSystemMode()` function
 
@@ -652,7 +551,7 @@ Standby - Start standby operation. (mutually exclusive of other options)
 PowerCycle - Power cycles the entire system. (mutually exclusive of other options)
 ```
 
-### TestMode
+## TestMode
 
 The below description from the Neato vacuum maps to the `neato_driver.TestMode()` function
 
@@ -662,7 +561,7 @@ On - Turns Testmode on. Mutually exclusive with Off.
 Off - Turns Testmode off. Mutually exclusive with On.
 ```
 
-### Upload
+## Upload
 
 The Upload function is not supported by this driver.
 
@@ -677,7 +576,3 @@ noburn - test option -- do NOT burn the flash after the upload.
 readflash - test option -- read the flash at the current region.
 reboot - Reset the robot after performing the upload.
 ```
-
-## Issues
-
-Please report any issues to the [neato-driver-python issues](https://github.com/brannonvann/neato-driver-python/issues)

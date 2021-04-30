@@ -810,7 +810,7 @@ def SetMotorVacuum(percent=None, rpm=None):
 
 
 def SetMotorWheelsEnable(rWheel=True, lWheel=True):
-    """Neato API Command: SetMotor. Seperated SetMotor for ease of use.
+    """Neato API Command: SetMotor. Seperated from SetMotor for ease of use.
     Enabled or disabled wheel motors. (TestMode Only)
 
     Args:
@@ -826,7 +826,7 @@ def SetMotorWheelsEnable(rWheel=True, lWheel=True):
 
 
 def SetMotorWheels(lWheelDist=0, rWheelDist=0, speed=1, accel=None):
-    """Neato API Command: SetMotor. Seperated SetMotor for ease of use.
+    """Neato API Command: SetMotor. Seperated from SetMotor for ease of use.
     Sets the specified wheel motors to run in a direction at a requested speed. (TestMode Only)
     Args:
         lWheelDist (int, optional): [description]. Defaults to 0.

@@ -16,6 +16,7 @@ import serial
 
 __serialPort = None
 __debug = False
+__timeout = 0.5  # second(s)
 
 
 class BacklightStatus(Enum):
@@ -121,21 +122,20 @@ class Calibrations(Enum):
 
 
 def __log(message):
-    global __debug
     if __debug:
         print(message)
 
 
 def __write(message):
-    global __serialPort
     __log(message)
     __serialPort.flush()
-    __serialPort.write(str.encode(message + '\n'))
+    __serialPort.write(str.encode(message + "\n"))
     buffer = list()
-    while (True):
+    start = time.time()
+    while True and (time.time() - start) < __timeout:
         if __serialPort.in_waiting > 0:  # for PySerial before v3.0: inWaiting()
             lines = __serialPort.readlines()
-            if lines[-1] == b'\x1a':
+            if lines[-1] == b"\x1a":
                 for line in lines[0:-1]:
                     buffer.append(line.decode().strip())
                 return buffer
@@ -146,7 +146,15 @@ def __write(message):
         time.sleep(0.01)
 
 
-def __parse_response(lines, intKeys=None, floatKeys=None, boolKeys=None, allInt=False, allFloat=False, allBool=False):
+def __parse_response(
+    lines,
+    intKeys=None,
+    floatKeys=None,
+    boolKeys=None,
+    allInt=False,
+    allFloat=False,
+    allBool=False,
+):
     # Parses response from neato and returns formatted result
     results = dict()
 
@@ -165,7 +173,7 @@ def __parse_response(lines, intKeys=None, floatKeys=None, boolKeys=None, allInt=
         elif allFloat or (floatKeys and parts[0] in floatKeys):
             results[parts[0]] = float(parts[1])
         elif allBool or (boolKeys and parts[0] in boolKeys):
-            results[parts[0]] = (parts[1] == "1")
+            results[parts[0]] = parts[1] == "1"
         else:
             results[parts[0]] = parts[1]
     return results
@@ -182,11 +190,19 @@ def Clean(mode: CleanMode = CleanMode.Stop):
     __write("Clean " + mode.value)
 
 
-def DiagTest(testMode: TestModes = TestModes.TestsOff,
-             motorOption: TestMotorOptions = None,
-             autoCycle=False, oneShot=False, disablePickupDetect=False, drivePathDist=-1,
-             driveForeverLeftDist=-1,   driveForeverRightDist=-1,
-             driveForeverSpeed=-1, speed=-1, brushSpeed=-1):
+def DiagTest(
+    testMode: TestModes = TestModes.TestsOff,
+    motorOption: TestMotorOptions = None,
+    autoCycle=False,
+    oneShot=False,
+    disablePickupDetect=False,
+    drivePathDist=-1,
+    driveForeverLeftDist=-1,
+    driveForeverRightDist=-1,
+    driveForeverSpeed=-1,
+    speed=-1,
+    brushSpeed=-1,
+):
     """Neato API Command: DiagTest.
     Executes different test modes. Once set, press Start button to engage.
 
@@ -214,19 +230,32 @@ def DiagTest(testMode: TestModes = TestModes.TestsOff,
         speed (int, optional): DropTest argument to set the robot speed in mm/s. Defaults to -1 (not sent).
         brushSpeed (int, optional): DropTest argument to set the speed of the brush in rpm. Defaults to -1 (not sent).
     """
-    __write("DiagTest " + testMode.value +
-            (" " + str(motorOption.value) if motorOption else "") +
-            (" AutoCycle" if autoCycle else "") +
-            (" OneShot" if oneShot else "") +
-            (" DisablePickupDetect" if disablePickupDetect else "") +
-            (" DrivePathDist " + str(drivePathDist) if drivePathDist > -1 else "") +
-            (" DriveForeverLeftDist " + str(driveForeverLeftDist) if driveForeverLeftDist > -1 else "") +
-            (" DriveForeverRightDist " + str(driveForeverRightDist) if driveForeverRightDist > -1 else "") +
-            (" DriveForeverSpeed " + str(driveForeverSpeed)
-                if driveForeverSpeed > -1 else "")
-            +
-            (" Speed " + str(speed) if speed > -1 else "") +
-            (" BrushSpeed " + str(brushSpeed) if brushSpeed > -1 else ""))
+    __write(
+        "DiagTest "
+        + testMode.value
+        + (" " + str(motorOption.value) if motorOption else "")
+        + (" AutoCycle" if autoCycle else "")
+        + (" OneShot" if oneShot else "")
+        + (" DisablePickupDetect" if disablePickupDetect else "")
+        + (" DrivePathDist " + str(drivePathDist) if drivePathDist > -1 else "")
+        + (
+            " DriveForeverLeftDist " + str(driveForeverLeftDist)
+            if driveForeverLeftDist > -1
+            else ""
+        )
+        + (
+            " DriveForeverRightDist " + str(driveForeverRightDist)
+            if driveForeverRightDist > -1
+            else ""
+        )
+        + (
+            " DriveForeverSpeed " + str(driveForeverSpeed)
+            if driveForeverSpeed > -1
+            else ""
+        )
+        + (" Speed " + str(speed) if speed > -1 else "")
+        + (" BrushSpeed " + str(brushSpeed) if brushSpeed > -1 else "")
+    )
 
 
 def GetAccel():
@@ -238,7 +267,11 @@ def GetAccel():
     """
 
     results = __write("GetAccel")
-    return __parse_response(results, floatKeys=["PitchInDegrees", "RollInDegrees", "XInG", "YInG", "ZInG", "SumInG"])
+    return __parse_response(
+        results,
+        floatKeys=["PitchInDegrees", "RollInDegrees",
+                   "XInG", "YInG", "ZInG", "SumInG"],
+    )
 
 
 def GetAnalogSensors(raw=False, stats=False):
@@ -260,8 +293,10 @@ def GetAnalogSensors(raw=False, stats=False):
 
         Stats: {}
     """
-    results = __write("GetAnalogSensors" + (" raw" if raw else "") +
-                      (" stats" if stats else ""))
+    results = __write(
+        "GetAnalogSensors" + (" raw" if raw else "") +
+        (" stats" if stats else "")
+    )
     return __parse_response(results, allInt=True)
 
 
@@ -286,7 +321,31 @@ def GetCalInfo():
     """
 
     results = __write("GetCalInfo")
-    return __parse_response(results, intKeys=['LDSOffset', 'XAccel', 'YAccel', 'ZAccel', 'RTCOffset', 'LCDContrast', 'RDropMin', 'RDropMid', 'RDropMax', 'LDropMin', 'LDropMid', 'LDropMax', 'WallMin', 'WallMid', 'WallMax', 'QAState', 'CleaningTestHardSpeed', 'CleaningTestCarpetSpeed', 'CleaningTestHardDistance', 'CleaningTestCarpetDistance'])
+    return __parse_response(
+        results,
+        intKeys=[
+            "LDSOffset",
+            "XAccel",
+            "YAccel",
+            "ZAccel",
+            "RTCOffset",
+            "LCDContrast",
+            "RDropMin",
+            "RDropMid",
+            "RDropMax",
+            "LDropMin",
+            "LDropMid",
+            "LDropMax",
+            "WallMin",
+            "WallMid",
+            "WallMax",
+            "QAState",
+            "CleaningTestHardSpeed",
+            "CleaningTestCarpetSpeed",
+            "CleaningTestHardDistance",
+            "CleaningTestCarpetDistance",
+        ],
+    )
 
 
 def GetCharger():
@@ -298,7 +357,23 @@ def GetCharger():
     """
 
     results = __write("GetCharger")
-    return __parse_response(results, intKeys=['FuelPercent', 'BattTempCAvg[0]', 'BattTempCAvg[1]'], floatKeys=['VBattV', 'VExtV', 'Charger_mAH'], boolKeys=['BatteryOverTemp', 'ChargingActive', 'ChargingEnabled', 'ConfidentOnFuel', 'OnReservedFuel', 'EmptyFuel', 'BatteryFailure', 'ExtPwrPresent', 'ThermistorPresent[0]', 'ThermistorPresent[1]'])
+    return __parse_response(
+        results,
+        intKeys=["FuelPercent", "BattTempCAvg[0]", "BattTempCAvg[1]"],
+        floatKeys=["VBattV", "VExtV", "Charger_mAH"],
+        boolKeys=[
+            "BatteryOverTemp",
+            "ChargingActive",
+            "ChargingEnabled",
+            "ConfidentOnFuel",
+            "OnReservedFuel",
+            "EmptyFuel",
+            "BatteryFailure",
+            "ExtPwrPresent",
+            "ThermistorPresent[0]",
+            "ThermistorPresent[1]",
+        ],
+    )
 
 
 def GetDigitalSensors():
@@ -366,12 +441,14 @@ def GetLifeStatLog():
     return "\n".join(lines)
 
 
-def GetMotors(brush=False,
-              vacuum=False,
-              leftWheel=False,
-              rightWheel=False,
-              laser=False,
-              charger=False):
+def GetMotors(
+    brush=False,
+    vacuum=False,
+    leftWheel=False,
+    rightWheel=False,
+    laser=False,
+    charger=False,
+):
     """Neato API Command: GetMotors.
     Get the diagnostic data for the motors.
 
@@ -387,12 +464,15 @@ def GetMotors(brush=False,
         dict: Example:{'Brush_RPM': 0, 'Brush_mA': 0, 'Vacuum_RPM': 0, 'Vacuum_mA': 0, 'LeftWheel_RPM': 0, 'LeftWheel_Load%': 0, 'LeftWheel_PositionInMM': -1, 'LeftWheel_Speed': 0, 'RightWheel_RPM': 0, 'RightWheel_Load%': 0, 'RightWheel_PositionInMM': 0, 'RightWheel_Speed': 0, 'Charger_mAH': 0, 'SideBrush_mA': 0}
     """
 
-    results = __write("GetMotors" + (" Brush" if brush else "") +
-                      (" Vacuum" if vacuum else "") +
-                      (" LeftWheel" if leftWheel else "") +
-                      (" RightWheel" if rightWheel else "") +
-                      (" Laser" if laser else "") +
-                      (" Charger" if charger else ""))
+    results = __write(
+        "GetMotors"
+        + (" Brush" if brush else "")
+        + (" Vacuum" if vacuum else "")
+        + (" LeftWheel" if leftWheel else "")
+        + (" RightWheel" if rightWheel else "")
+        + (" Laser" if laser else "")
+        + (" Charger" if charger else "")
+    )
     return __parse_response(results, allInt=True)
 
 
@@ -455,19 +535,29 @@ def GetTime():
 
         Note: Day, Month, and Year are not supplied so it's assumed to be the current day or if day of week is different than today, the previous day of the week.
     """
-    days = ["Monday", "Tuesday", "Wednesday",
-            "Thursday", "Friday", "Saturday", "Sunday"]
+    days = [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday",
+    ]
     line = __write("GetTime")[1]
     parts = line.split()
     timeParts = parts[1].split(":")
     dayOfWeek = days.index(parts[0])
     now = datetime.datetime.today()
 
-    daysAdjustment = 0 if now.weekday() == dayOfWeek else (now.weekday()+dayOfWeek)-7
+    daysAdjustment = (
+        0 if now.weekday() == dayOfWeek else (now.weekday() + dayOfWeek) - 7
+    )
 
     result = now + datetime.timedelta(days=daysAdjustment)
-    result = result.replace(hour=int(timeParts[0]), minute=int(
-        timeParts[1]), second=int(timeParts[2]))
+    result = result.replace(
+        hour=int(timeParts[0]), minute=int(timeParts[1]), second=int(timeParts[2])
+    )
 
     return result
 
@@ -578,8 +668,11 @@ def PlaySound(soundId: Sounds = Sounds.Stop):
         20 – Thank You
     """
 
-    __write("PlaySound " + ("SoundID " + str(soundId.value) if not soundId == Sounds.Stop else "") +
-            ("Stop" if soundId == Sounds.Stop else ""))
+    __write(
+        "PlaySound "
+        + ("SoundID " + str(soundId.value) if not soundId == Sounds.Stop else "")
+        + ("Stop" if soundId == Sounds.Stop else "")
+    )
 
 
 def RestoreDefaults():
@@ -600,11 +693,14 @@ def SetDistanceCal(drop: Calibrations = None, wall: Calibrations = None):
         wall (Calibrations, optional): Take minimum, middle, or maximum distance wall sensor readings. Defaults to None.
 
     Returns:
-        dict: 
+        dict:
     """
 
-    results = __write("SetDistanceCal"(" Drop" + drop.value if drop else "") +
-                      (" Wall" + wall.value if wall else ""))
+    results = __write(
+        "SetDistanceCal"
+        + (" Drop" + drop.value if drop else "")
+        + (" Wall" + wall.value if wall else "")
+    )
     return __parse_response(results, allInt=True)
 
 
@@ -620,7 +716,14 @@ def SetFuelGauge(percent):
     __write("SetFuelGauge Percent " + str(percent))
 
 
-def SetLCD(backgroundColor: LCDColors = None, foregroundColor: LCDColors = None, bars: LCDBars = None, horizontalLine=-1, verticalLine=-1, contrast=-1):
+def SetLCD(
+    backgroundColor: LCDColors = None,
+    foregroundColor: LCDColors = None,
+    bars: LCDBars = None,
+    horizontalLine=-1,
+    verticalLine=-1,
+    contrast=-1,
+):
     """Neato API Command: SetLCD.
     Sets the LCD to the specified display. (TestMode Only)
 
@@ -633,13 +736,15 @@ def SetLCD(backgroundColor: LCDColors = None, foregroundColor: LCDColors = None,
         contrast (int, optional): Set the following value as the LCD Contrast value into NAND. 0-63. Defaults to -1 (not sent).
     """
 
-    __write("SetLCD" +
-            (" BG" + backgroundColor.value if backgroundColor else "") +
-            (" FG" + foregroundColor.value if foregroundColor else "") +
-            (" " + bars.value + "Bars" if bars else "") +
-            (" HLine " + str(horizontalLine) if horizontalLine > -1 else "") +
-            (" VLine " + str(verticalLine) if verticalLine > -1 else "") +
-            (" Contrast " + str(contrast) if contrast > -1 else ""))
+    __write(
+        "SetLCD"
+        + (" BG" + backgroundColor.value if backgroundColor else "")
+        + (" FG" + foregroundColor.value if foregroundColor else "")
+        + (" " + bars.value + "Bars" if bars else "")
+        + (" HLine " + str(horizontalLine) if horizontalLine > -1 else "")
+        + (" VLine " + str(verticalLine) if verticalLine > -1 else "")
+        + (" Contrast " + str(contrast) if contrast > -1 else "")
+    )
 
 
 def SetLDSRotation(rotate):
@@ -650,8 +755,7 @@ def SetLDSRotation(rotate):
         rotate (bool): Whether or not to have the Laser Rotate. True: Rotate, False:Stop rotating.
     """
 
-    __write("SetLDSRotation " +
-            ("On" if rotate else "Off"))
+    __write("SetLDSRotation " + ("On" if rotate else "Off"))
 
 
 def SetLED(backlight: BacklightStatus = None, button: ButtonColors = None):
@@ -663,9 +767,11 @@ def SetLED(backlight: BacklightStatus = None, button: ButtonColors = None):
         button (ButtonColors, optional): Neato Button and LED Color. Defaults to None.
     """
 
-    __write("SetLED" +
-            (" " + backlight.value if backlight else "") +
-            (" " + button.value if button else ""))
+    __write(
+        "SetLED"
+        + (" " + backlight.value if backlight else "")
+        + (" " + button.value if button else "")
+    )
 
 
 def SetMotorBrush(enabled, rpm):
@@ -678,9 +784,11 @@ def SetMotorBrush(enabled, rpm):
 
     """
 
-    __write("SetMotor brush" +
-            (" BrushEnable" if enabled else " BrushDisable") +
-            (" RPM " + str(rpm) if rpm else ""))
+    __write(
+        "SetMotor brush"
+        + (" BrushEnable" if enabled else " BrushDisable")
+        + (" RPM " + str(rpm) if rpm else "")
+    )
 
 
 def SetMotorVacuum(percent=None, rpm=None):
@@ -710,9 +818,11 @@ def SetMotorWheelsEnable(rWheel=True, lWheel=True):
         lWheel (bool, optional): Enable or disable left wheel. Defaults to True.
     """
 
-    __write("SetMotor" + (" RWheelEnable" if rWheel else " RWheelDisable")
-            + (" LWheelEnable" if lWheel else " LWheelDisable")
-            )
+    __write(
+        "SetMotor"
+        + (" RWheelEnable" if rWheel else " RWheelDisable")
+        + (" LWheelEnable" if lWheel else " LWheelDisable")
+    )
 
 
 def SetMotorWheels(lWheelDist=0, rWheelDist=0, speed=1, accel=None):
@@ -725,16 +835,25 @@ def SetMotorWheels(lWheelDist=0, rWheelDist=0, speed=1, accel=None):
         accel ([type], optional): [description]. Defaults to None.
     """
 
-    __write("SetMotor" + " lWheelDist " + str(lWheelDist) +
-            " rWheelDist " + str(rWheelDist) + " speed " + str(speed)
-            + (" accel " + str(accel) if accel else ""))
+    __write(
+        "SetMotor"
+        + " lWheelDist "
+        + str(lWheelDist)
+        + " rWheelDist "
+        + str(rWheelDist)
+        + " speed "
+        + str(speed)
+        + (" accel " + str(accel) if accel else "")
+    )
 
 
-def SetSchedule(day=0,
-                hour=0,
-                minute=0,
-                scheduleType: ScheduleTypes = ScheduleTypes.House,
-                enabled=True):
+def SetSchedule(
+    day=0,
+    hour=0,
+    minute=0,
+    scheduleType: ScheduleTypes = ScheduleTypes.House,
+    enabled=True,
+):
     """Neato API Command: SetSchedule.
     Modify Cleaning Schedule
 
@@ -746,10 +865,14 @@ def SetSchedule(day=0,
         enabled (OnToggle, optional): Enable or Disable Scheduled cleanings. Defaults to OnToggle.On.
     """
 
-    __write("SetSchedule" + (" " + str(day)) +
-            (" " + str(hour)) +
-            (" " + str(minute)) +
-            (" " + scheduleType.value) + (" ON" if enabled else " OFF"))
+    __write(
+        "SetSchedule"
+        + (" " + str(day))
+        + (" " + str(hour))
+        + (" " + str(minute))
+        + (" " + scheduleType.value)
+        + (" ON" if enabled else " OFF")
+    )
 
 
 def SetSystemMode(mode: SystemModes):
@@ -777,10 +900,17 @@ def SetTime(now=datetime.datetime.today()):
     if day == 8:
         day = 0
 
-    __write("SetTime" + " Day " + str(day) +
-            " Hour " + str(now.hour) +
-            " Min " + str(now.minute) +
-            " Sec " + str(now.second))
+    __write(
+        "SetTime"
+        + " Day "
+        + str(day)
+        + " Hour "
+        + str(now.hour)
+        + " Min "
+        + str(now.minute)
+        + " Sec "
+        + str(now.second)
+    )
 
 
 def SetWallFollower(enable):
@@ -808,8 +938,7 @@ def TestMode(on):
 
 
 def test():
-    """Tests generates for testing module. Review code. Most are commented out but available for reference.
-    """
+    """Tests generates for testing module. Review code. Most are commented out but available for reference."""
     # TestMode(False)
     # TestMode(False)
     # Clean(CleanMode.House)
@@ -976,13 +1105,14 @@ def test():
     return
 
 
-def init(port, printDebug=False):
+def init(port, printDebug=False, timeout=0.5):
     """initilize connection with Neato.
 
     Args:
         port (string): port description such "/dev/neato" or "COM3"
         printDebug (bool, optional): Whether or not to print debug logging. Defaults to False.
     """
-    global __serialPort, __debug
+    global __serialPort, __debug, __timeout
     __debug = printDebug
     __serialPort = serial.Serial(port, timeout=0)
+    __timeout = timeout
